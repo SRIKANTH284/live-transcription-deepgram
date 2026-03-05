@@ -444,9 +444,12 @@
   const toast        = document.getElementById('toast');
   const wrap         = document.getElementById('transcriptWrap');
 
-  // Pre-fill API key
-  apiKeyInput.value = '570e9534c58d00e3479a515a4c4790b32c848aed';
-  apiKeyStatus.classList.add('visible');
+  // Load API key from localStorage (never hardcode in source)
+  const savedKey = localStorage.getItem('dg_api_key');
+  if (savedKey) {
+    apiKeyInput.value = savedKey;
+    apiKeyStatus.classList.add('visible');
+  }
 
   let socket = null;
   let mediaStream = null;
@@ -457,7 +460,10 @@
   let lastConfidence = null;
 
   apiKeyInput.addEventListener('input', () => {
-    apiKeyStatus.classList.toggle('visible', apiKeyInput.value.trim().length > 10);
+    const key = apiKeyInput.value.trim();
+    apiKeyStatus.classList.toggle('visible', key.length > 10);
+    if (key.length > 10) localStorage.setItem('dg_api_key', key);
+    else localStorage.removeItem('dg_api_key');
   });
 
   function setStatus(state, label) {
